@@ -2,11 +2,18 @@
 
 Official PyTorch implementation of **PC-MambaGAN**, from the paper:
 
-> **PC-MambaGAN: Parallel Contextual Mamba for Cross-Modality Medical Image Synthesis**
-> *Expert Systems with Applications (ESWA), Elsevier.*
-> Citation details will be added soon (see [Citation](#citation)).
+> **PC-MambaGAN: Parallel contextual mamba for cross-modality medical image synthesis**
+> Moumita Dholey, Sanjoy Chatterjee, Rosina Ahmed, Jayanta Mukherjee
+> *Expert Systems with Applications*, vol. 336, 135092, 2027.
+> [[Paper]](https://www.sciencedirect.com/science/article/pii/S0957417426039941) · [[DOI: 10.1016/j.eswa.2026.135092]](https://doi.org/10.1016/j.eswa.2026.135092)
 
-PC-MambaGAN is an adversarial framework for paired cross-modality medical image synthesis. It has been evaluated on MRI ↔ CT (Gold Atlas) and PET ↔ CT (QIN-Breast and an in-house breast PET/CT cohort) translation.
+PC-MambaGAN is a deterministic, single-pass adversarial framework for paired cross-modality medical image synthesis. It has been evaluated on MRI ↔ CT (Gold Atlas) and PET ↔ CT (QIN-Breast and an in-house breast PET/CT cohort) translation.
+
+**Highlights** (from the paper)
+
+- Highest PSNR in 6 of 8 translation directions, and best on all three fidelity metrics (PSNR, SSIM, MS-SSIM) in 5 of them, averaging about 33 dB PSNR.
+- Better than the convolutional and diffusion baselines on every metric in all 8 directions, and better than I2I-Mamba in 23 of 24 metric–direction comparisons.
+- 34.2M parameters (one-third of I2I-Mamba), 0.15 GB peak activation memory, and about 31 ms per 256 × 256 slice on a single consumer GPU.
 
 > **Note:** This repository is forked from [I2I-Mamba](https://github.com/icon-lab/I2I-Mamba) and has been fully reworked. The training/testing interface (`train.py`, `test.py`, command-line options, dataset format) follows I2I-Mamba. The network, scanning strategy, fusion modules and loss functions are new.
 
@@ -18,7 +25,7 @@ PC-MambaGAN is an adversarial framework for paired cross-modality medical image 
 - **PC-Mamba block**
   - **Bidirectional square-scan SSM.** Tokens are traversed in Chebyshev-radius shells (concentric squares), forward and reverse. This keeps spatially neighbouring pixels close in the scan sequence.
   - **Frequency-Aware Channel Fusion (FACF).** Mixes channels in the Fourier domain, using EinFFT-based spectral fusion.
-  - **Selective Feature Modulation Aggregation Module.** Cross-gates the parallel branches against each other.
+  - **Selective Feature Modulation Aggregation Module (SFMAM).** Cross-gates the parallel local (convolutional) and global (state-space) branches for adaptive local–global integration.
 - **Training objective.** Combines adversarial, L1, MS-SSIM and feature-matching losses with a **Gray-Level Hessian Co-occurrence Matrix (GLHCM)** texture loss, which captures curvature-aware texture.
 
 ---
@@ -186,10 +193,20 @@ We thank the providers of the [Gold Atlas](https://doi.org/10.1002/mp.12748) and
 
 ## Citation
 
-If you use this code, please cite our paper. The BibTeX entry will be added once the paper is published.
+If you use this code, please cite our paper:
 
 ```bibtex
-% Coming soon
+@article{DHOLEY2027135092,
+  title    = {PC-MambaGAN: Parallel contextual mamba for cross-modality medical image synthesis},
+  author   = {Moumita Dholey and Sanjoy Chatterjee and Rosina Ahmed and Jayanta Mukherjee},
+  journal  = {Expert Systems with Applications},
+  volume   = {336},
+  pages    = {135092},
+  year     = {2027},
+  issn     = {0957-4174},
+  doi      = {10.1016/j.eswa.2026.135092},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0957417426039941}
+}
 ```
 
 Please also cite I2I-Mamba:
